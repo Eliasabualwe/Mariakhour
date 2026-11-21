@@ -253,26 +253,36 @@
 		var inner = widget.firstElementChild;
 		var mod = widget.querySelector('sr7-module, rs-module');
 		if (!inner || !mod) { return; }
-		var gridW = 0;
+		var gridW = 0, applied = '';
 
 		function measureGrid() {
-			// Widest picture layer, at its designed (unscaled) size.
+			// Widest picture layer in ANY slide, at its designed (unscaled) size. Layers of slides
+			// that are not on screen have no layout, so their inline width is read as well.
 			var layers = mod.querySelectorAll('sr7-img, rs-img');
 			for (var i = 0; i < layers.length; i++) {
-				var w = layers[i].offsetWidth;
-				if (w > gridW) { gridW = w; }
+				var w = Math.max(layers[i].offsetWidth, parseFloat(layers[i].style.width) || 0);
+				if (w > gridW && w < 3000) { gridW = w; }
 			}
 		}
 
-		function apply() {
+		function reset() {
 			inner.style.transform = '';
 			widget.style.height = '';
-			if (window.innerWidth <= 820) { widget.classList.remove('shs-fit-wrap'); return; }
+			widget.classList.remove('shs-fit-wrap');
+			applied = '';
+		}
+
+		// One scale for every slide, so the banner keeps the same size when it changes slide.
+		function apply() {
+			if (window.innerWidth <= 820) { reset(); return; }
 			measureGrid();
 			var W = widget.offsetWidth, H = mod.offsetHeight;
 			if (!gridW || !H) { return; }
 			var s = W / gridW;
-			if (!(s > 1.01 && s < 3)) { widget.classList.remove('shs-fit-wrap'); return; }
+			if (!(s > 1.01 && s < 3)) { reset(); return; }
+			var key = s.toFixed(4) + '|' + H;
+			if (key === applied) { return; }
+			applied = key;
 			widget.classList.add('shs-fit-wrap');
 			inner.style.transformOrigin = '50% 0';
 			inner.style.transform = 'scale(' + s.toFixed(4) + ')';
@@ -280,18 +290,19 @@
 		}
 
 		var t = 0;
-		function later() { clearTimeout(t); t = setTimeout(apply, 150); }
-		window.addEventListener('resize', function () { gridW = 0; later(); });
+		function later() { clearTimeout(t); t = setTimeout(apply, 120); }
+		window.addEventListener('resize', function () { gridW = 0; applied = ''; inner.style.transform = ''; later(); });
 		window.addEventListener('load', later);
-		// The slider only builds its picture layers once it scrolls into view: watch for them.
+		// The slider builds its layers late (when it scrolls into view) and swaps slides: re-check
+		// on every change. Once the scale is set, re-checks change nothing.
 		if (window.MutationObserver) {
-			var mo = new MutationObserver(function () {
-				if (mod.querySelector('sr7-img, rs-img')) { later(); }
-			});
-			mo.observe(mod, { childList: true, subtree: true });
-			setTimeout(function () { mo.disconnect(); }, 120000);
+			new MutationObserver(later).observe(mod, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-current'] });
 		}
-		[300, 1500, 4000].forEach(function (ms) { setTimeout(apply, ms); });
+		var tries = 0;
+		var poll = setInterval(function () {
+			apply();
+			if (applied || ++tries > 90) { clearInterval(poll); }
+		}, 700);
 	})();
 
 	// ---- one-time entrance ----

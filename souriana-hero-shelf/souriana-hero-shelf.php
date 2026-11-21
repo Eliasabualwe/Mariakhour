@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Souriana Hero Shelf
  * Description: Animated curved product shelf at the top of the homepage only. Shows best-selling products in order; visitors can drag through them. Does not change any other page, product, price or setting. Deactivate to remove it completely.
- * Version: 1.4.0
+ * Version: 1.5.0
  * Author: Souriana Golden
  * Requires PHP: 7.4
  * Text Domain: souriana-hero-shelf
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Souriana_Hero_Shelf {
 
-	const VERSION   = '1.4.0';
+	const VERSION   = '1.5.0';
 	const CACHE_KEY = 'souriana_hero_shelf_products_v1';
 	const CATS_KEY  = 'souriana_hero_shelf_aisles_v1';
 	const MAX_ITEMS = 14;
@@ -44,10 +44,14 @@ final class Souriana_Hero_Shelf {
 	}
 
 	public static function assets() {
+		$url = plugin_dir_url( __FILE__ ) . 'assets/';
+		if ( ! is_admin() ) {
+			// Header "Become a customer" button style: on every page, because the header is.
+			wp_enqueue_style( 'souriana-header-button', $url . 'header.css', array(), self::VERSION );
+		}
 		if ( ! self::enabled() ) {
 			return;
 		}
-		$url = plugin_dir_url( __FILE__ ) . 'assets/';
 		wp_enqueue_style(
 			'souriana-hero-shelf-fonts',
 			'https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Inter+Tight:wght@700&family=Inter:wght@400;500&display=swap',
@@ -307,8 +311,8 @@ final class Souriana_Hero_Shelf {
 			<path class="shs-draw" pathLength="1" d="M281 338 L303 302"/>
 			<path class="shs-draw" pathLength="1" d="M1262 352 C1300 398 1270 436 1160 450"/>
 			<path class="shs-draw" pathLength="1" d="M1160 450 L1179 436 M1160 450 L1181 459"/>
-			<path class="shs-draw" pathLength="1" d="M500 846 C518 814 584 814 618 842"/>
-			<path class="shs-draw" pathLength="1" d="M618 842 L600 840 M618 842 L611 825"/>
+			<path class="shs-draw" pathLength="1" d="M462 846 C480 814 546 814 580 842"/>
+			<path class="shs-draw" pathLength="1" d="M580 842 L562 840 M580 842 L573 825"/>
 		</svg>
 		<div class="shs-note shs-note-a">Most<br>ordered</div>
 		<div class="shs-note shs-note-b">Free to join</div>
@@ -326,7 +330,7 @@ final class Souriana_Hero_Shelf {
 
 		<div class="shs-cta">
 			<span class="shs-ring" aria-hidden="true"></span>
-			<a class="shs-btn" href="<?php echo esc_url( $join ); ?>">Become a customer</a>
+			<a class="shs-btn" href="<?php echo esc_url( $join ); ?>">Become a customer · كن عميلاً</a>
 		</div>
 	</div>
 </section>

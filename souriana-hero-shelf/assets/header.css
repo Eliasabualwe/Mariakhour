@@ -1,0 +1,50 @@
+@charset "UTF-8";
+/* Souriana: "Become a customer" header button, styled like the homepage hero button
+   (dark green pill inside a dashed ring) and shown in English + Arabic. CSS only. */
+.whb-header .wd-button-wrapper:has(> a[href*="become-a-customer"]),
+.whb-clone .wd-button-wrapper:has(> a[href*="become-a-customer"]) {
+	position: relative;
+	padding: 5px;
+}
+.whb-header .wd-button-wrapper:has(> a[href*="become-a-customer"])::before,
+.whb-clone .wd-button-wrapper:has(> a[href*="become-a-customer"])::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: 999px;
+	border: 1.5px dashed rgba(8, 72, 45, .55);
+	pointer-events: none;
+}
+.whb-header .wd-button-wrapper > a.btn[href*="become-a-customer"],
+.whb-clone .wd-button-wrapper > a.btn[href*="become-a-customer"] {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 40px;
+	padding: 0 20px;
+	border: 0 !important;
+	border-radius: 999px !important;
+	background: #08482D !important;
+	box-shadow: none !important;
+	font-size: 0 !important;          /* hide the original single-language text */
+	line-height: 1;
+	text-transform: none !important;
+	letter-spacing: 0 !important;
+	white-space: nowrap;
+	transition: background .2s ease, transform .2s ease;
+}
+.whb-header .wd-button-wrapper > a.btn[href*="become-a-customer"]::before,
+.whb-clone .wd-button-wrapper > a.btn[href*="become-a-customer"]::before {
+	content: "Become a customer · كن عميلاً";
+	font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+	font-size: 14px;
+	font-weight: 500;
+	color: #fff;
+	unicode-bidi: plaintext;
+}
+.whb-header .wd-button-wrapper > a.btn[href*="become-a-customer"]:hover,
+.whb-clone .wd-button-wrapper > a.btn[href*="become-a-customer"]:hover {
+	background: #0b5c3a !important;
+	transform: translateY(-1px);
+}

@@ -140,7 +140,7 @@ body.home .shs-fit-wrap { overflow: hidden; }
 	transform: rotate(16deg);
 }
 .shs-note-b {
-	left: calc(521 * var(--u));
+	left: calc(483 * var(--u));
 	top: calc(857 * var(--u));
 	font-size: calc(32 * var(--u));
 	transform: rotate(24deg);
@@ -242,9 +242,9 @@ body.home .shs-fit-wrap { overflow: hidden; }
 /* ---------- button ---------- */
 .shs-cta {
 	position: absolute;
-	left: calc(626 * var(--u));
+	left: calc(591 * var(--u));
 	top: calc(821 * var(--u));
-	width: calc(190 * var(--u));
+	width: calc(258 * var(--u));
 	height: calc(74 * var(--u));
 	z-index: 3;
 }
@@ -259,7 +259,7 @@ body.home .shs-fit-wrap { overflow: hidden; }
 	position: absolute;
 	left: calc(9 * var(--u));
 	top: calc(8 * var(--u));
-	width: calc(172 * var(--u));
+	width: calc(240 * var(--u));
 	height: calc(58 * var(--u));
 	border-radius: 999px;
 	display: flex;
@@ -328,14 +328,14 @@ body.home .shs-fit-wrap { overflow: hidden; }
 		left: auto;
 		top: auto;
 		margin-top: 22px;
-		width: 214px;
+		width: 278px;
 		height: 72px;
 	}
 	.shs-ring { border-width: 2px; }
 	.shs .shs-btn {
 		left: 9px;
 		top: 8px;
-		width: 196px;
+		width: 260px;
 		height: 56px;
 		font-size: 16px;
 	}
