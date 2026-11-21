@@ -102,12 +102,13 @@
 		dragging = true; pid = e.pointerId; lastX = e.clientX; lastT = performance.now(); moved = 0; vel = 0;
 		target = o;
 		stage.classList.add('is-dragging');
-		try { stage.setPointerCapture(pid); } catch (err) { /* ignore */ }
+		// Pointer capture waits for a real drag, so a plain click still opens the link.
 	});
 	stage.addEventListener('pointermove', function (e) {
 		if (!dragging || e.pointerId !== pid) { return; }
 		var now = performance.now(), dx = e.clientX - lastX, dt = Math.max(now - lastT, 1);
 		lastX = e.clientX; lastT = now; moved += Math.abs(dx);
+		if (moved > 6 && !stage.hasPointerCapture(pid)) { try { stage.setPointerCapture(pid); } catch (err) { /* ignore */ } }
 		o -= dx; target = o;
 		vel = vel * 0.6 + (-dx / dt) * 0.4;     // px per ms
 	});
@@ -123,6 +124,8 @@
 	}
 	stage.addEventListener('pointerup', endDrag);
 	stage.addEventListener('pointercancel', endDrag);
+	window.addEventListener('pointerup', endDrag);      // release outside the carousel
+	window.addEventListener('pointercancel', endDrag);
 	stage.addEventListener('lostpointercapture', function () { if (dragging) { endDrag(null); } });
 
 	// Tap a side card = bring it to the centre. Tap the centre card = open the category.

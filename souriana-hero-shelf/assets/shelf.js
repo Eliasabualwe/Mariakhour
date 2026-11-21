@@ -165,7 +165,7 @@
 		dragVel = 0;
 		vel = 0;
 		row.classList.add('is-dragging');
-		try { row.setPointerCapture(pid); } catch (err) { /* ignore */ }
+		// Pointer capture waits for a real drag, so a plain click still opens the product.
 	});
 
 	row.addEventListener('pointermove', function (e) {
@@ -176,6 +176,7 @@
 		lastX = e.clientX;
 		lastT = tNow;
 		moved += Math.abs(dx);
+		if (moved > 6 && !row.hasPointerCapture(pid)) { try { row.setPointerCapture(pid); } catch (err) { /* ignore */ } }
 		var du = dx / k;
 		s -= du;                                   // follow the pointer 1:1
 		var inst = -du / dt;
@@ -192,6 +193,8 @@
 	}
 	row.addEventListener('pointerup', endDrag);
 	row.addEventListener('pointercancel', endDrag);
+	window.addEventListener('pointerup', endDrag);      // release outside the carousel
+	window.addEventListener('pointercancel', endDrag);
 	row.addEventListener('lostpointercapture', function () { if (dragging) { endDrag(null); } });
 
 	// A drag must not open the product; a clean tap/click still does.
