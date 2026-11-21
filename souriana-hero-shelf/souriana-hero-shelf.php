@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Souriana Hero Shelf
  * Description: Animated curved product shelf at the top of the homepage only. Shows best-selling products in order; visitors can drag through them. Does not change any other page, product, price or setting. Deactivate to remove it completely.
- * Version: 1.5.0
+ * Version: 1.5.1
  * Author: Souriana Golden
  * Requires PHP: 7.4
  * Text Domain: souriana-hero-shelf
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Souriana_Hero_Shelf {
 
-	const VERSION   = '1.5.0';
+	const VERSION   = '1.5.1';
 	const CACHE_KEY = 'souriana_hero_shelf_products_v1';
 	const CATS_KEY  = 'souriana_hero_shelf_aisles_v1';
 	const MAX_ITEMS = 14;
@@ -54,7 +54,7 @@ final class Souriana_Hero_Shelf {
 		}
 		wp_enqueue_style(
 			'souriana-hero-shelf-fonts',
-			'https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Inter+Tight:wght@700&family=Inter:wght@400;500&display=swap',
+			'https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&family=Caveat:wght@600&family=Inter+Tight:wght@700&family=Inter:wght@400;500&display=swap',
 			array(),
 			null
 		);
@@ -314,7 +314,7 @@ final class Souriana_Hero_Shelf {
 			<path class="shs-draw" pathLength="1" d="M462 846 C480 814 546 814 580 842"/>
 			<path class="shs-draw" pathLength="1" d="M580 842 L562 840 M580 842 L573 825"/>
 		</svg>
-		<div class="shs-note shs-note-a">Most<br>ordered</div>
+		<div class="shs-note shs-note-a">Most<br>ordered<span class="shs-note-ar">الأكثر طلباً</span></div>
 		<div class="shs-note shs-note-b">Free to join</div>
 
 		<div class="shs-row" role="list">

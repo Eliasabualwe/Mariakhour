@@ -135,9 +135,20 @@ body.home .shs-fit-wrap { overflow: hidden; }
 }
 .shs-note-a {
 	left: calc(1212 * var(--u));
-	top: calc(230 * var(--u));
+	top: calc(204 * var(--u));
 	font-size: calc(38 * var(--u));
 	transform: rotate(16deg);
+}
+.shs-note-ar {
+	display: block;
+	margin-top: calc(6 * var(--u));
+	font-family: "Aref Ruqaa", "Caveat", serif;
+	font-weight: 700;
+	font-size: .82em;
+	line-height: 1.25;
+	direction: rtl;
+	text-align: left;
+	unicode-bidi: plaintext;
 }
 .shs-note-b {
 	left: calc(483 * var(--u));
