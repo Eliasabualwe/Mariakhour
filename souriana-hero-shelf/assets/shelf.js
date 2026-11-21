@@ -228,6 +228,57 @@
 	render();
 	raf = requestAnimationFrame(tick);
 
+	// ---- first homepage banner: fill the full content width (desktop only) ----
+	// CSS removes the space Elementor reserved for the old category list. The slider keeps its
+	// picture at its designed size, so the whole slider is scaled up evenly until the picture
+	// spans the section. Nothing inside the slider is edited. Phones are left untouched.
+	(function fitBanner() {
+		var widget = document.querySelector('.elementor-element-636f584 .elementor-widget-slider_revolution');
+		if (!widget) { return; }
+		var inner = widget.firstElementChild;
+		var mod = widget.querySelector('sr7-module, rs-module');
+		if (!inner || !mod) { return; }
+		var gridW = 0;
+
+		function measureGrid() {
+			// Widest picture layer, at its designed (unscaled) size.
+			var layers = mod.querySelectorAll('sr7-img, rs-img');
+			for (var i = 0; i < layers.length; i++) {
+				var w = layers[i].offsetWidth;
+				if (w > gridW) { gridW = w; }
+			}
+		}
+
+		function apply() {
+			inner.style.transform = '';
+			widget.style.height = '';
+			if (window.innerWidth <= 820) { widget.classList.remove('shs-fit-wrap'); return; }
+			measureGrid();
+			var W = widget.offsetWidth, H = mod.offsetHeight;
+			if (!gridW || !H) { return; }
+			var s = W / gridW;
+			if (!(s > 1.01 && s < 3)) { widget.classList.remove('shs-fit-wrap'); return; }
+			widget.classList.add('shs-fit-wrap');
+			inner.style.transformOrigin = '50% 0';
+			inner.style.transform = 'scale(' + s.toFixed(4) + ')';
+			widget.style.height = Math.round(H * s) + 'px';
+		}
+
+		var t = 0;
+		function later() { clearTimeout(t); t = setTimeout(apply, 150); }
+		window.addEventListener('resize', function () { gridW = 0; later(); });
+		window.addEventListener('load', later);
+		// The slider only builds its picture layers once it scrolls into view: watch for them.
+		if (window.MutationObserver) {
+			var mo = new MutationObserver(function () {
+				if (mod.querySelector('sr7-img, rs-img')) { later(); }
+			});
+			mo.observe(mod, { childList: true, subtree: true });
+			setTimeout(function () { mo.disconnect(); }, 120000);
+		}
+		[300, 1500, 4000].forEach(function (ms) { setTimeout(apply, ms); });
+	})();
+
 	// ---- one-time entrance ----
 	if (reduce || !root.animate) { return; }
 	var ease = 'cubic-bezier(.2,.8,.2,1)';

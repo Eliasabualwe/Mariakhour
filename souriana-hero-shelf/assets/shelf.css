@@ -1,21 +1,28 @@
 /* Souriana Hero Shelf — homepage only. Everything is scoped under .shs. */
 
-/* Homepage only: Woodmart keeps the "Browse categories" list open on the homepage,
-   next to the first banner. The hero now sits above that banner, so move the open
-   list down by exactly the hero's height: it stays in its original place beside the
-   banner instead of covering the headline. */
-body.home .whb-header .wd-dropdown-cats.wd-opened {
-	transform: translateY(var(--shs-h, calc(960 * min(calc(100vw / 1440), calc(100vh / 960))))) !important;
-}
-/* The sticky copy of the header shows the list only when opened by hand. */
-body.home .whb-clone .wd-dropdown-cats.wd-opened {
-	transform: none !important;
-}
-body.home .whb-clone .wd-header-cats:not(:hover) > .wd-dropdown-cats.wd-opened {
+/* Homepage, desktop: hide Woodmart's always-open "Browse categories" list.
+   It still opens normally when the visitor hovers the "Browse categories" button. */
+body.home .wd-header-cats:not(:hover) > .wd-dropdown-cats.wd-opened {
 	opacity: 0 !important;
 	visibility: hidden !important;
 	pointer-events: none !important;
 }
+
+/* Homepage, desktop: the first banner section no longer needs the 300px it kept free
+   for the category list. Stretch it to the same edges as the category section above
+   (content width = min(viewport, 1320px) - 2 x 24px). shelf.js then scales the slider
+   so its picture fills that width. Phones keep the original layout. */
+@media (min-width: 821px) {
+	body.home .elementor-element-636f584 {
+		padding-left: 0 !important;
+		margin-left: calc((100% - (min(100vw, 1320px) - 48px)) / 2) !important;
+		margin-right: calc((100% - (min(100vw, 1320px) - 48px)) / 2) !important;
+	}
+	body.home .elementor-element-636f584 > .elementor-container { max-width: none !important; }
+	body.home .elementor-element-636f584 .elementor-element-populated { padding: 0 !important; }
+}
+body.home .shs-fit-wrap { overflow: hidden; }
+
 .shs {
 	--u: min(calc(100vw / 1440), calc(100vh / 960));
 	--bg: #F5F8EF;
