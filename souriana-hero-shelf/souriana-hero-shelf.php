@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Souriana Hero Shelf
  * Description: Animated curved product shelf at the top of the homepage only. Shows best-selling products in order; visitors can drag through them. Does not change any other page, product, price or setting. Deactivate to remove it completely.
- * Version: 1.1.1
+ * Version: 1.2.0
  * Author: Souriana Golden
  * Requires PHP: 7.4
  * Text Domain: souriana-hero-shelf
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Souriana_Hero_Shelf {
 
-	const VERSION   = '1.1.1';
+	const VERSION   = '1.2.0';
 	const CACHE_KEY = 'souriana_hero_shelf_products_v1';
 	const CATS_KEY  = 'souriana_hero_shelf_aisles_v1';
 	const MAX_ITEMS = 14;
@@ -146,6 +146,19 @@ final class Souriana_Hero_Shelf {
 		if ( $n < 3 ) {
 			return '';
 		}
+		$shop = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/shop/' );
+		// "All products" always comes first.
+		array_unshift(
+			$cats,
+			array(
+				'slug' => '_all',
+				'name' => 'All products',
+				'ar'   => 'كل المنتجات',
+				'url'  => $shop,
+				'all'  => true,
+			)
+		);
+		$n     = count( $cats );
 		$sizes = array( 0, 1, 2, 1 );
 		$arrow = '<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
 		ob_start();
@@ -158,6 +171,7 @@ final class Souriana_Hero_Shelf {
 				<h2 class="sha-title">Every aisle, <em>one swipe away</em></h2>
 			</div>
 			<div class="sha-nav">
+				<a class="sha-all" href="<?php echo esc_url( $shop ); ?>">View all products · كل المنتجات<span class="sha-all-ic"><?php echo $arrow; // phpcs:ignore WordPress.Security.EscapeOutput ?></span></a>
 				<span class="sha-count"><b>01</b> / <?php echo esc_html( str_pad( (string) $n, 2, '0', STR_PAD_LEFT ) ); ?></span>
 				<button type="button" class="sha-arrow sha-prev" aria-label="Previous category"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
 				<button type="button" class="sha-arrow sha-next" aria-label="Next category"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
@@ -165,19 +179,19 @@ final class Souriana_Hero_Shelf {
 		</div>
 		<div class="sha-stage" tabindex="0" role="list">
 			<?php foreach ( $cats as $i => $c ) : ?>
-			<a class="sha-card s<?php echo (int) $sizes[ $i % 4 ]; ?> t<?php echo (int) ( $i % 5 ); ?>" role="listitem" href="<?php echo esc_url( $c['url'] ); ?>" draggable="false" aria-label="<?php echo esc_attr( $c['name'] ); ?>">
+			<a class="sha-card s<?php echo (int) $sizes[ $i % 4 ]; ?> <?php echo ! empty( $c['all'] ) ? 't-all' : 't' . (int) ( ( $i - 1 ) % 5 ); ?>" role="listitem" href="<?php echo esc_url( $c['url'] ); ?>" draggable="false" aria-label="<?php echo esc_attr( $c['name'] ); ?>">
 				<span class="sha-blob"><?php echo self::icon( $c['slug'] ); // phpcs:ignore WordPress.Security.EscapeOutput -- static SVG shipped with the plugin. ?></span>
 				<span class="sha-meta">
 					<span class="sha-en"><?php echo esc_html( $c['name'] ); ?></span>
 					<?php if ( $c['ar'] ) : ?><span class="sha-ar"><?php echo esc_html( $c['ar'] ); ?></span><?php endif; ?>
-					<span class="sha-foot"><span class="sha-n"><?php echo esc_html( $c['count'] ); ?> products</span><span class="sha-go"><?php echo $arrow; // phpcs:ignore WordPress.Security.EscapeOutput ?></span></span>
+					<span class="sha-foot"><span class="sha-go"><?php echo $arrow; // phpcs:ignore WordPress.Security.EscapeOutput ?></span></span>
 				</span>
 			</a>
 			<?php endforeach; ?>
 		</div>
 		<div class="sha-chips">
 			<?php foreach ( $cats as $c ) : ?>
-			<button type="button" class="sha-chip"><?php echo esc_html( $c['name'] ); ?></button>
+			<button type="button" class="sha-chip<?php echo ! empty( $c['all'] ) ? ' sha-chip-all' : ''; ?>"><?php echo esc_html( ! empty( $c['all'] ) ? 'All products · كل المنتجات' : $c['name'] ); ?></button>
 			<?php endforeach; ?>
 		</div>
 		<div class="sha-bar"><i></i></div>

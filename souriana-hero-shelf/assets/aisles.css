@@ -344,3 +344,11 @@
 @media (prefers-reduced-motion: reduce) {
 	.sha-card.t-all::after, .sha-all-ic svg { animation: none; }
 }
+
+/* No product counts: the footer only holds the arrow. */
+.sha-foot { justify-content: flex-end; }
+@media (max-width: 820px) {
+	.sha-nav { flex-wrap: wrap; row-gap: 12px; }
+	.sha .sha-all { width: 100%; justify-content: space-between; margin-right: 0; }
+	.sha .sha-prev { margin-left: auto; }
+}
