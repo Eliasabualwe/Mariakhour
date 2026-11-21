@@ -162,7 +162,9 @@ body.home .shs-fit-wrap { overflow: hidden; }
 	left: 0;
 	top: 0;
 	display: block;
-	will-change: transform, clip-path;
+	will-change: transform;
+	contain: layout paint;
+	isolation: isolate;
 	text-decoration: none !important;
 	color: inherit;
 	-webkit-tap-highlight-color: transparent;
@@ -347,4 +349,11 @@ body.home .shs-fit-wrap { overflow: hidden; }
 
 @media (prefers-reduced-motion: reduce) {
 	.shs-in img { transition: none; }
+}
+
+/* Banner moved to the top of the homepage by shelf.js. */
+body.home .shs-banner-top { padding: 22px 0 26px; }
+body.home .shs-banner-top .elementor-element-636f584 { margin-top: 0 !important; margin-bottom: 0 !important; }
+@media (max-width: 820px) {
+	body.home .shs-banner-top { padding: 0 12px 14px; }
 }

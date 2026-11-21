@@ -19,6 +19,21 @@
 		if (aislesEl && root.parentNode) { root.parentNode.insertBefore(aislesEl, root.nextSibling); }
 	}
 
+	// Homepage order: 1) the first banner (egg slider), 2) categories, 3) product shelf.
+	// The banner section is moved (not edited) into a wrapper that keeps Elementor's classes,
+	// so its own styles and the slider keep working.
+	(function reorder() {
+		var parent = root.parentNode;
+		var banner = document.querySelector('.elementor .elementor-element-636f584');
+		if (!parent || !banner) { return; }
+		var holder = document.createElement('div');
+		holder.className = 'elementor elementor-1146 shs-banner-top';
+		holder.appendChild(banner);
+		parent.insertBefore(holder, root);
+		var aisles = document.getElementById('sha');
+		if (aisles) { parent.insertBefore(aisles, root); }
+	})();
+
 	var row = root.querySelector('.shs-row');
 	var cards = Array.prototype.slice.call(row.querySelectorAll('.shs-card'));
 	if (!cards.length) { return; }
