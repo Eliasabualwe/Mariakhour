@@ -49,6 +49,15 @@
 			rowW = 1440 * u;
 		}
 		row.style.setProperty('--k', k + 'px');
+		// Lets the CSS move Woodmart's open category list below the hero.
+		// Shift = hero height + any gap between the header and the hero.
+		var hdrEl = document.querySelector('.whb-header');
+		var gap = 0;
+		if (hdrEl) {
+			gap = root.getBoundingClientRect().top - hdrEl.getBoundingClientRect().bottom;
+			if (!(gap > 0 && gap < 200)) { gap = 0; }
+		}
+		document.documentElement.style.setProperty('--shs-h', Math.round(root.offsetHeight + gap) + 'px');
 	}
 
 	function f(n) { return Math.round(n * 10) / 10; }
