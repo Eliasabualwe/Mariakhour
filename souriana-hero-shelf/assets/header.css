@@ -36,7 +36,7 @@
 }
 .whb-header .wd-button-wrapper > a.btn[href*="become-a-customer"]::before,
 .whb-clone .wd-button-wrapper > a.btn[href*="become-a-customer"]::before {
-	content: "Become a customer · كن عميلاً";
+	content: "Become a customer · سجّل الآن";
 	font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 	font-size: 14px;
 	font-weight: 500;

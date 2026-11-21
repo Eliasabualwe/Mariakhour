@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Souriana Hero Shelf
  * Description: Animated curved product shelf at the top of the homepage only. Shows best-selling products in order; visitors can drag through them. Does not change any other page, product, price or setting. Deactivate to remove it completely.
- * Version: 1.5.1
+ * Version: 1.5.2
  * Author: Souriana Golden
  * Requires PHP: 7.4
  * Text Domain: souriana-hero-shelf
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Souriana_Hero_Shelf {
 
-	const VERSION   = '1.5.1';
+	const VERSION   = '1.5.2';
 	const CACHE_KEY = 'souriana_hero_shelf_products_v1';
 	const CATS_KEY  = 'souriana_hero_shelf_aisles_v1';
 	const MAX_ITEMS = 14;
@@ -330,7 +330,7 @@ final class Souriana_Hero_Shelf {
 
 		<div class="shs-cta">
 			<span class="shs-ring" aria-hidden="true"></span>
-			<a class="shs-btn" href="<?php echo esc_url( $join ); ?>">Become a customer · كن عميلاً</a>
+			<a class="shs-btn" href="<?php echo esc_url( $join ); ?>">Become a customer · سجّل الآن</a>
 		</div>
 	</div>
 </section>
