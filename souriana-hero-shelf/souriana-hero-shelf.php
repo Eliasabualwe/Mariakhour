@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Souriana Hero Shelf
  * Description: Animated curved product shelf at the top of the homepage only. Shows best-selling products in order; visitors can drag through them. Does not change any other page, product, price or setting. Deactivate to remove it completely.
- * Version: 1.0.3
+ * Version: 1.1.1
  * Author: Souriana Golden
  * Requires PHP: 7.4
  * Text Domain: souriana-hero-shelf
@@ -14,8 +14,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Souriana_Hero_Shelf {
 
-	const VERSION   = '1.0.3';
+	const VERSION   = '1.1.1';
 	const CACHE_KEY = 'souriana_hero_shelf_products_v1';
+	const CATS_KEY  = 'souriana_hero_shelf_aisles_v1';
 	const MAX_ITEMS = 14;
 
 	private static $printed = false;
@@ -39,6 +40,7 @@ final class Souriana_Hero_Shelf {
 
 	public static function flush() {
 		delete_transient( self::CACHE_KEY );
+		delete_transient( self::CATS_KEY );
 	}
 
 	public static function assets() {
@@ -54,6 +56,135 @@ final class Souriana_Hero_Shelf {
 		);
 		wp_enqueue_style( 'souriana-hero-shelf', $url . 'shelf.css', array(), self::VERSION );
 		wp_enqueue_script( 'souriana-hero-shelf', $url . 'shelf.js', array(), self::VERSION, true );
+		wp_enqueue_style( 'souriana-hero-aisles', $url . 'aisles.css', array(), self::VERSION );
+		wp_enqueue_script( 'souriana-hero-aisles', $url . 'aisles.js', array(), self::VERSION, true );
+	}
+
+	/** Arabic names shown under each category (by slug). */
+	private static function arabic_names() {
+		return array(
+			'snacks-and-sweets'   => 'سناكات وحلويات',
+			'hot-drinks'          => 'المشروبات الساخنة',
+			'spices'              => 'بهارات',
+			'pickles'             => 'مخللات',
+			'sauces-and-dressing' => 'صلصات وتتبيلات',
+			'canned-products'     => 'المعلبات',
+			'drinks'              => 'المشروبات',
+			'meat-and-fish'       => 'لحوم وأسماك',
+			'household-products'  => 'منتجات منزلية',
+			'nuts-and-seeds'      => 'مكسرات وبذور',
+			'dairy-products'      => 'منتجات الألبان',
+			'dried-products'      => 'التمور والمجففات',
+			'jam'                 => 'مربيات',
+			'grains-and-cereals'  => 'حبوب وبقوليات',
+			'tahini-and-halva'    => 'طحينة وحلاوة',
+			'rice'                => 'الأرز',
+			'olives'              => 'زيتون',
+			'zaatar'              => 'زعتر',
+			'charcoal'            => 'فحم',
+			'noodles'             => 'نودلز',
+			'egs'                 => 'بيض',
+		);
+	}
+
+	/** Top-level product categories with products, largest first. */
+	private static function aisles() {
+		$cached = get_transient( self::CATS_KEY );
+		if ( is_array( $cached ) ) {
+			return $cached;
+		}
+		$terms = get_terms(
+			array(
+				'taxonomy'   => 'product_cat',
+				'parent'     => 0,
+				'hide_empty' => true,
+				'orderby'    => 'count',
+				'order'      => 'DESC',
+				'number'     => 24,
+			)
+		);
+		$ar    = self::arabic_names();
+		$items = array();
+		if ( ! is_wp_error( $terms ) ) {
+			foreach ( $terms as $t ) {
+				if ( 'uncategorized' === $t->slug ) {
+					continue;
+				}
+				$link = get_term_link( $t );
+				if ( is_wp_error( $link ) ) {
+					continue;
+				}
+				$items[] = array(
+					'slug'  => $t->slug,
+					'name'  => html_entity_decode( $t->name, ENT_QUOTES, 'UTF-8' ),
+					'ar'    => isset( $ar[ $t->slug ] ) ? $ar[ $t->slug ] : '',
+					'count' => (int) $t->count,
+					'url'   => $link,
+				);
+			}
+		}
+		set_transient( self::CATS_KEY, $items, HOUR_IN_SECONDS );
+		return $items;
+	}
+
+	private static function icon( $slug ) {
+		static $icons = null;
+		if ( null === $icons ) {
+			$raw   = file_get_contents( __DIR__ . '/assets/aisle-icons.json' ); // phpcs:ignore WordPress.WP.AlternativeFunctions
+			$icons = $raw ? json_decode( $raw, true ) : array();
+			if ( ! is_array( $icons ) ) {
+				$icons = array();
+			}
+		}
+		$svg = isset( $icons[ $slug ] ) ? $icons[ $slug ] : ( isset( $icons['_default'] ) ? $icons['_default'] : '' );
+		return '<svg viewBox="0 0 48 48" aria-hidden="true" focusable="false">' . $svg . '</svg>';
+	}
+
+	private static function aisles_markup() {
+		$cats = self::aisles();
+		$n    = count( $cats );
+		if ( $n < 3 ) {
+			return '';
+		}
+		$sizes = array( 0, 1, 2, 1 );
+		$arrow = '<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+		ob_start();
+		?>
+<section id="sha" class="sha" aria-label="Shop by category">
+	<div class="sha-wrap">
+		<div class="sha-head">
+			<div>
+				<p class="sha-kicker">Browse by aisle · تسوّق حسب القسم</p>
+				<h2 class="sha-title">Every aisle, <em>one swipe away</em></h2>
+			</div>
+			<div class="sha-nav">
+				<span class="sha-count"><b>01</b> / <?php echo esc_html( str_pad( (string) $n, 2, '0', STR_PAD_LEFT ) ); ?></span>
+				<button type="button" class="sha-arrow sha-prev" aria-label="Previous category"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
+				<button type="button" class="sha-arrow sha-next" aria-label="Next category"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+			</div>
+		</div>
+		<div class="sha-stage" tabindex="0" role="list">
+			<?php foreach ( $cats as $i => $c ) : ?>
+			<a class="sha-card s<?php echo (int) $sizes[ $i % 4 ]; ?> t<?php echo (int) ( $i % 5 ); ?>" role="listitem" href="<?php echo esc_url( $c['url'] ); ?>" draggable="false" aria-label="<?php echo esc_attr( $c['name'] ); ?>">
+				<span class="sha-blob"><?php echo self::icon( $c['slug'] ); // phpcs:ignore WordPress.Security.EscapeOutput -- static SVG shipped with the plugin. ?></span>
+				<span class="sha-meta">
+					<span class="sha-en"><?php echo esc_html( $c['name'] ); ?></span>
+					<?php if ( $c['ar'] ) : ?><span class="sha-ar"><?php echo esc_html( $c['ar'] ); ?></span><?php endif; ?>
+					<span class="sha-foot"><span class="sha-n"><?php echo esc_html( $c['count'] ); ?> products</span><span class="sha-go"><?php echo $arrow; // phpcs:ignore WordPress.Security.EscapeOutput ?></span></span>
+				</span>
+			</a>
+			<?php endforeach; ?>
+		</div>
+		<div class="sha-chips">
+			<?php foreach ( $cats as $c ) : ?>
+			<button type="button" class="sha-chip"><?php echo esc_html( $c['name'] ); ?></button>
+			<?php endforeach; ?>
+		</div>
+		<div class="sha-bar"><i></i></div>
+	</div>
+</section>
+		<?php
+		return ob_get_clean();
 	}
 
 	/**
@@ -116,7 +247,7 @@ final class Souriana_Hero_Shelf {
 		if ( self::$printed || ! self::enabled() ) {
 			return;
 		}
-		$html = self::markup( false );
+		$html = self::markup( false ) . self::aisles_markup();
 		if ( $html ) {
 			self::$printed = true;
 			echo $html; // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in markup().
@@ -127,7 +258,7 @@ final class Souriana_Hero_Shelf {
 		if ( self::$printed || ! self::enabled() ) {
 			return;
 		}
-		$html = self::markup( true );
+		$html = self::markup( true ) . self::aisles_markup();
 		if ( $html ) {
 			self::$printed = true;
 			echo $html; // phpcs:ignore WordPress.Security.EscapeOutput -- escaped in markup().
